@@ -1,16 +1,7 @@
-import styles from "./page.module.css";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
 
-export default function Home() {
-    return (
-        <div className={styles.page}>
-            <main className={styles.main}>
-                <div className={styles.intro}>
-                    {<h1>Registration</h1>}
-                    {<input className={styles.emailField} name="email" />}
-                    {<input className={styles.passwordField} name="password" />}
-                    {<p className={styles.footerText}>Temporary text</p>}
-                </div>
-            </main>
-        </div>
-    );
+export default async function Home() {
+    const session = await getSession();
+    redirect(session ? "/dashboard" : "/register");
 }

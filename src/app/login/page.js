@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function Login() {
     const [message, setMessage] = useState("");
@@ -48,8 +49,16 @@ export default function Login() {
                         placeholder="Password"
                         required
                     />
-                    <button type="submit">Log in</button>
+                    <button type="submit" className={styles.loginBtn}>
+                        Log in
+                    </button>
                     <p className={styles.footerText}>{message}</p>
+                    <p className={styles.switchText}>
+                        No account yet?{" "}
+                        <Link className={styles.switchLink} href="/register">
+                            Register
+                        </Link>
+                    </p>
                 </form>
             </main>
         </div>
