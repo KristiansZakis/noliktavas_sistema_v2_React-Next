@@ -1,5 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import db from "@/lib/db";
 
 const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
 const COOKIE_NAME = "session";
@@ -36,4 +38,21 @@ export async function getSession() {
 export async function destroySession() {
     const cookieStore = await cookies();
     cookieStore.delete(COOKIE_NAME);
+}
+
+export async function getCurrentUser() {
+    const session = await getSession();
+    if (!session) return null;
+    return (
+        db
+            .prepare("SELECT id, username, email, role FROM users WHERE id = ?")
+            .get(session.userId) ?? null
+    );
+}
+
+export async function requireRole(...roles) {
+    const user = await getCurrentUser();
+    if (!user) redirect("/login");
+    if (!roles.includes(user.role)) redirect("/dashboard");
+    return user;
 }

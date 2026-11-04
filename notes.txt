@@ -1,6 +1,6 @@
 login system 1
 
-role system 0
+role system 1
 
 different interface 0
 
