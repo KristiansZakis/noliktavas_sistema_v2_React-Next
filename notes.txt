@@ -2,5 +2,5 @@ login system 1
 
 role system 1
 
-different interface 0
+different interface 0,5
 
