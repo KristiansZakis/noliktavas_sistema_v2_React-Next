@@ -4,3 +4,14 @@ role system 1
 
 different interface 0,5
 
+inventārs 0
+
+meklēšana 0 
+
+filtri 0 
+
+iestatījumi 0 
+
+profils 0
+
+bridinājumi 0

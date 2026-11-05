@@ -10,7 +10,7 @@ export default async function UsersPage() {
         .all();
 
     return (
-        <main>
+        <div>
             <h1>Users</h1>
             <table>
                 <thead>
@@ -32,6 +32,6 @@ export default async function UsersPage() {
                     ))}
                 </tbody>
             </table>
-        </main>
+        </div>
     );
 }

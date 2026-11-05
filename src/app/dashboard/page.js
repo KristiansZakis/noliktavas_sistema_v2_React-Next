@@ -1,16 +1,14 @@
-import Link from "next/link";
-import { requireRole } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
+
+const HOME = {
+    admin: "/admin",
+    worker: "/worker",
+    client: "/client",
+};
 
 export default async function Dashboard() {
-    const user = await requireRole("admin", "worker", "client");
-
-    return (
-        <main>
-            <h1>Welcome, {user.username}</h1>
-            <p>Role: {user.role}</p>
-            {user.role === "admin" && (
-                <Link href="/dashboard/users">Manage users</Link>
-            )}
-        </main>
-    );
+    const user = await getCurrentUser();
+    if (!user) redirect("/login");
+    redirect(HOME[user.role] ?? "/login");
 }
