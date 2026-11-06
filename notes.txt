@@ -15,3 +15,5 @@ iestatījumi 0
 profils 0
 
 bridinājumi 0
+
+item_condition = options with html
