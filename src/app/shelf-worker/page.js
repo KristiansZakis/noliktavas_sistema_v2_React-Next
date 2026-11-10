@@ -1,11 +1,16 @@
 import { requireRole } from "@/lib/auth";
 
 export default async function Page() {
-    await requireRole("client");
+    await requireRole("shelf-worker");
     return (
         <>
-            <h1>Client area</h1>
-            <p>Your orders will appear here.</p>
+            <h1>Shells</h1>
+            <p>Shelf adress</p>
+            <div id="sidebar">
+                <button>New item</button>
+                <button>Storage</button>
+                <button>Shelfs</button>
+            </div>
         </>
     );
 }

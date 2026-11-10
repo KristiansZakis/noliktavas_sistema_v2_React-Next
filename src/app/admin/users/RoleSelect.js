@@ -31,7 +31,7 @@ export default function RoleSelect({ userId, role }) {
             <select value={value} onChange={handleChange}>
                 <option value="admin">admin</option>
                 <option value="worker">worker</option>
-                <option value="client">client</option>
+                <option value="shelf-worker">shelf-worker</option>
             </select>
             {error && <span> {error}</span>}
         </>
