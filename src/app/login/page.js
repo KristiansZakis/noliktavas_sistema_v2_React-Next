@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
-import Link from "next/link";
 
 export default function Login() {
     const [message, setMessage] = useState("");
@@ -24,7 +23,8 @@ export default function Login() {
 
         const data = await res.json().catch(() => ({}));
         if (res.ok) {
-            router.push("/dashboard");
+            router.push("/");
+            router.refresh();
         } else {
             setMessage(data.error || "Server error");
         }
@@ -53,12 +53,6 @@ export default function Login() {
                         Log in
                     </button>
                     <p className={styles.footerText}>{message}</p>
-                    <p className={styles.switchText}>
-                        No account yet?{" "}
-                        <Link className={styles.switchLink} href="/register">
-                            Register
-                        </Link>
-                    </p>
                 </form>
             </main>
         </div>

@@ -1,15 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { request } from "@/components/api-client";
 
 export default function LogoutButton() {
     const router = useRouter();
 
-    async function handleLogout() {
-        await fetch("/api/auth/logout", { method: "POST" });
+    async function logout() {
+        await request("/api/auth/logout", "POST");
         router.push("/login");
         router.refresh();
     }
 
-    return <button onClick={handleLogout}>Log out</button>;
+    return (
+        <button type="button" onClick={logout}>
+            Log out
+        </button>
+    );
 }

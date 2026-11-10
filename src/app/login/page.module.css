@@ -4,9 +4,15 @@
     flex: 1;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centers the content vertically */
+    justify-content: center;
     min-height: 100vh;
-    font-family: var(--font-geist-sans);
+    font-family:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
     background-color: var(--background);
     width: 100%;
 }
@@ -27,10 +33,10 @@
 .intro {
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* Stretches inputs/button nicely to fit */
+    align-items: stretch;
     width: 100%;
     gap: 20px;
-    background-color: transparent; /* Removed the dark gray background so it uses .main */
+    background-color: transparent;
 }
 
 .intro h1 {
@@ -45,7 +51,7 @@
     padding: 0 14px;
     width: 100%;
     height: 45px;
-    box-sizing: border-box; /* Ensures padding doesn't overflow width */
+    box-sizing: border-box;
     border: 1px solid #ddd;
     border-radius: 8px;
 }
