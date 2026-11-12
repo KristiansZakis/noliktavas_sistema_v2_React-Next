@@ -48,24 +48,20 @@ a {
     }
 }
 
-/* ---------- Warehouse app: shared UI ---------- */
 h1 { margin-bottom: 16px; }
 h2 { margin: 24px 0 8px; font-size: 1.15rem; }
 p { margin-bottom: 8px; }
 
-/* layout */
 .header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 12px 24px; border-bottom: 1px solid rgba(128, 128, 128, 0.35); }
 .nav, .user, .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .nav { gap: 18px; }
 .content { max-width: 1100px; margin: 0 auto; padding: 24px; }
 
-/* tables */
 .table-wrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px; }
 th, td { border-bottom: 1px solid rgba(128, 128, 128, 0.35); padding: 8px 10px; text-align: left; vertical-align: top; }
 th { font-weight: 600; white-space: nowrap; }
 
-/* forms and buttons */
 input, select, button { font: inherit; padding: 6px 10px; border: 1px solid rgba(128, 128, 128, 0.55); border-radius: 6px; background: transparent; color: inherit; }
 input[type="number"] { width: 90px; }
 button { cursor: pointer; }
@@ -78,7 +74,6 @@ button.danger { border-color: #c0392b; color: #c0392b; }
 .form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 .panel { border: 1px solid rgba(128, 128, 128, 0.35); border-radius: 10px; padding: 4px 16px 12px; margin: 16px 0; }
 
-/* messages and badges */
 .error { color: #c0392b; margin: 8px 0; }
 .muted { opacity: 0.65; }
 .warn { color: #b9770e; }

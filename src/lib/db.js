@@ -64,8 +64,6 @@ db.exec(`
     );
 `);
 
-// The first admin is created from environment variables (see .env.example).
-// All other accounts are created by an admin in the Users page.
 const adminExists = db
     .prepare("SELECT 1 FROM users WHERE role = 'admin' LIMIT 1")
     .get();

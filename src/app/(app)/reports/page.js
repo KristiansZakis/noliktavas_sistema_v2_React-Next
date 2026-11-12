@@ -2,7 +2,6 @@ import { requirePermission } from "@/lib/auth";
 import { can, REPORTS } from "@/lib/constants";
 import { buildReport } from "@/lib/services";
 
-// Generated on demand: /reports?type=warehouse or /reports?type=placement
 export default async function Page({ searchParams }) {
     const user = await requirePermission(["reports.warehouse", "reports.placement"]);
     const allowed = Object.entries(REPORTS).filter(([, r]) => can(user.role, r.permission));

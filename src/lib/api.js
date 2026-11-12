@@ -2,12 +2,6 @@ import { getCurrentUser } from "@/lib/auth";
 import { can } from "@/lib/constants";
 import { HttpError } from "@/lib/validate";
 
-/**
- * Wraps an API route handler with authentication, permission checking,
- * JSON body parsing and error handling.
- *
- *   export const POST = api("items.edit", ({ user, body }) => createItem(user, body));
- */
 export function api(permission, handler) {
     return async (request, ctx) => {
         const user = await getCurrentUser();

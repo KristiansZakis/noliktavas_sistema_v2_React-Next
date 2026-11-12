@@ -1,5 +1,3 @@
-// Pure constants and helpers - safe to import from server and client code.
-
 export const ROLES = ["admin", "worker", "shelf-worker"];
 
 export const ROLE_LABELS = {
@@ -7,8 +5,6 @@ export const ROLE_LABELS = {
     worker: "Warehouse worker",
     "shelf-worker": "Shelf stocker",
 };
-
-/* ---------- permissions (the single source of truth for access control) ---------- */
 
 export const PERMISSIONS = {
     "users.manage": "Create, edit, delete users; assign roles",
@@ -42,15 +38,11 @@ const ROLE_PERMISSIONS = {
     "shelf-worker": ["items.view", "placement.manage", "reports.placement"],
 };
 
-/** `permission` may be a string or an array (any one of them is enough). */
 export function can(role, permission) {
     const granted = ROLE_PERMISSIONS[role] ?? [];
     return [].concat(permission).some((p) => granted.includes(p));
 }
 
-/* ---------- navigation ---------- */
-
-// The first menu entry a role may open is that role's home page.
 const MENU = [
     { href: "/users", label: "Users", permission: "users.manage" },
     { href: "/orders", label: "Orders", permission: "orders.manage" },
@@ -67,8 +59,6 @@ const MENU = [
 export const menuFor = (role) => MENU.filter((m) => can(role, m.permission));
 export const homeFor = (role) => menuFor(role)[0]?.href ?? "/login";
 
-/* ---------- warehouse data ---------- */
-
 export const ITEM_CONDITIONS = ["new", "good", "damaged", "expired"];
 
 export const ORDER_STATUSES = [
@@ -79,7 +69,6 @@ export const ORDER_STATUSES = [
     "cancelled",
 ];
 
-// Allowed order status transitions (the fulfilment process).
 export const ORDER_FLOW = {
     new: ["processing", "cancelled"],
     processing: ["shipped", "cancelled"],

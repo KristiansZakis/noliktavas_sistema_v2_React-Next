@@ -31,8 +31,6 @@ export async function destroySession() {
     (await cookies()).delete(COOKIE);
 }
 
-// The role is always read from the database, so role changes and deleted
-// accounts take effect immediately instead of when the cookie expires.
 export async function getCurrentUser() {
     const token = (await cookies()).get(COOKIE)?.value;
     if (!token) return null;
@@ -40,7 +38,9 @@ export async function getCurrentUser() {
         const { payload } = await jwtVerify(token, secret);
         return (
             db
-                .prepare("SELECT id, username, email, role FROM users WHERE id = ?")
+                .prepare(
+                    "SELECT id, username, email, role FROM users WHERE id = ?",
+                )
                 .get(payload.userId) ?? null
         );
     } catch {
@@ -48,7 +48,6 @@ export async function getCurrentUser() {
     }
 }
 
-/** For pages: returns the user, or redirects if not logged in / not allowed. */
 export async function requirePermission(permission) {
     const user = await getCurrentUser();
     if (!user) redirect("/login");

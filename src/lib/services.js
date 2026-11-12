@@ -4,8 +4,6 @@ import { HttpError } from "@/lib/validate";
 import * as v from "@/lib/validate";
 import { ORDER_FLOW, formatLocation } from "@/lib/constants";
 
-/* ---------- helpers ---------- */
-
 const notFound = (what) => new HttpError(404, `${what} not found`);
 
 const UNIQUE_MESSAGES = {
@@ -15,7 +13,6 @@ const UNIQUE_MESSAGES = {
     "place.storage_row_number": "This location already exists",
 };
 
-// Runs fn in a transaction and turns UNIQUE violations into friendly 409s.
 function write(fn) {
     try {
         return db.transaction(fn)();
@@ -26,14 +23,11 @@ function write(fn) {
     }
 }
 
-// Every data change is recorded here; the warehouse report shows the latest.
 function log(user, description) {
     db.prepare(
         "INSERT INTO change_history (user_id, description) VALUES (?, ?)",
     ).run(user.id, description);
 }
-
-/* ---------- users (admin) ---------- */
 
 export const listUsers = () =>
     db
@@ -88,9 +82,6 @@ export function deleteUser(actor, id) {
     return { ok: true };
 }
 
-/* ---------- items ---------- */
-
-// Items together with the shelf locations they are placed on.
 export function listItems() {
     const items = db
         .prepare("SELECT * FROM storage_items ORDER BY name COLLATE NOCASE, id")
@@ -159,8 +150,6 @@ export function deleteItem(user, id) {
     return { ok: true };
 }
 
-/* ---------- shelf locations ---------- */
-
 export function listPlaces() {
     const places = db
         .prepare(
@@ -220,13 +209,6 @@ export function deletePlace(user, id) {
     return { ok: true };
 }
 
-/* ---------- placement (which item is on which shelf) ---------- */
-
-/**
- * Sets how many units of an item are on a shelf location (creating the
- * location if it does not exist). When `placeId` is given, the item is moved
- * away from that old location first.
- */
 export function savePlacement(user, body) {
     const itemId = v.int(body?.itemId, "Item", { min: 1 });
     const quantity = v.int(body?.quantity, "Quantity", { min: 1 });
@@ -248,7 +230,6 @@ export function savePlacement(user, body) {
         let finalQty = quantity;
         if (moving) {
             db.prepare("DELETE FROM items_place WHERE item_id=? AND place_id=?").run(itemId, fromPlaceId);
-            // Moving onto a shelf that already holds this item merges the units.
             finalQty += db
                 .prepare("SELECT quantity FROM items_place WHERE item_id=? AND place_id=?")
                 .get(itemId, place.place_id)?.quantity ?? 0;
@@ -288,8 +269,6 @@ export function removePlacement(user, body) {
     });
     return { ok: true };
 }
-
-/* ---------- orders ---------- */
 
 export const listOrders = () =>
     db
@@ -346,7 +325,6 @@ export function createOrder(user, body) {
     });
 }
 
-// Moves an order along ORDER_FLOW. Shipping takes the units out of stock.
 export function setOrderStatus(user, id, body) {
     const status = v.orderStatus(body?.status);
     return write(() => {
@@ -395,9 +373,6 @@ export function deleteOrder(user, id) {
     return { ok: true };
 }
 
-/* ---------- reports ---------- */
-// A report is generated on demand: { title, summary: [text], sections: [{ title, head, rows }] }
-
 export function buildReport(type, user) {
     const items = listItems();
     const generated = `Generated ${new Date().toISOString().slice(0, 19).replace("T", " ")} UTC by ${user.username}`;
@@ -440,7 +415,6 @@ export function buildReport(type, user) {
         };
     }
 
-    // placement
     return {
         title: "Placement and condition report",
         summary: [generated],

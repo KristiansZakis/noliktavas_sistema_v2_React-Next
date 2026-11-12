@@ -14,9 +14,11 @@ const bad = (message) => {
 export function str(value, label, { min = 1, max = 100 } = {}) {
     if (typeof value !== "string") bad(`${label} is required`);
     const s = value.trim();
-    // biome-ignore lint/suspicious/noControlCharactersInRegex: rejects control characters on purpose
-    if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(s))
-        bad(`${label} contains invalid characters`);
+    const hasControlChar = [...s].some((ch) => {
+        const code = ch.charCodeAt(0);
+        return code <= 8 || code === 11 || code === 12 || (code >= 14 && code <= 31);
+    });
+    if (hasControlChar) bad(`${label} contains invalid characters`);
     if (s.length < min || s.length > max)
         bad(`${label} must be ${min}-${max} characters`);
     return s;
@@ -76,7 +78,6 @@ export function userFields(body, { passwordRequired }) {
     if ((typeof b.password === "string" && b.password !== "") || passwordRequired) {
         if (typeof b.password !== "string" || b.password.length < 8)
             bad("Password must be at least 8 characters");
-        // bcrypt only uses the first 72 bytes
         if (Buffer.byteLength(b.password) > 72)
             bad("Password must be at most 72 bytes");
         password = b.password;

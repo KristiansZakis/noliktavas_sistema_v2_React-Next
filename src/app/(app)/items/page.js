@@ -3,7 +3,6 @@ import { can } from "@/lib/constants";
 import { listItems } from "@/lib/services";
 import ItemsManager from "@/components/ItemsManager";
 
-// Everybody may view items; editing and deleting depend on the role.
 export default async function Page() {
     const user = await requirePermission("items.view");
     return (
