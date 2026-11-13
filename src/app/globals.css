@@ -201,3 +201,160 @@ button.danger {
     border-color: #b9770e;
     color: #b9770e;
 }
+
+:root {
+    --page-pad: 24px;
+}
+
+.header {
+    padding: 12px var(--page-pad);
+}
+
+.content {
+    width: 100%;
+    min-width: 0;
+    padding: var(--page-pad);
+}
+
+h1 {
+    font-size: clamp(1.4rem, 1.1rem + 1.5vw, 2rem);
+}
+
+:focus-visible {
+    outline: 2px solid #2f6fed;
+    outline-offset: 2px;
+}
+
+input,
+select {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.table-wrap {
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 1400px) {
+    .content {
+        max-width: 1280px;
+    }
+}
+
+@media (max-width: 900px) {
+    :root {
+        --page-pad: 16px;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th,
+    td {
+        padding: 8px 6px;
+    }
+}
+
+@media (max-width: 640px) {
+    :root {
+        --page-pad: 12px;
+    }
+
+    .header {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .nav {
+        flex-wrap: nowrap;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .nav a {
+        flex: none;
+        padding: 8px 14px;
+        border: 1px solid rgba(128, 128, 128, 0.35);
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    .user {
+        justify-content: space-between;
+    }
+
+    .form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        align-items: end;
+    }
+
+    .form label,
+    .form input,
+    .form select,
+    .form button,
+    input[type="number"],
+    input[type="search"] {
+        width: 100%;
+        min-width: 0 !important;
+    }
+
+    input,
+    select,
+    button {
+        min-height: 40px;
+        font-size: 16px;
+    }
+
+    .panel {
+        padding: 4px 12px 12px;
+    }
+
+    .actions {
+        gap: 6px;
+    }
+
+    .table-wrap table {
+        min-width: 560px;
+    }
+}
+
+@media (pointer: coarse) {
+    button,
+    select,
+    input {
+        min-height: 40px;
+    }
+}
+
+@media print {
+    .header,
+    form,
+    button {
+        display: none !important;
+    }
+
+    .content {
+        max-width: none;
+        padding: 0;
+    }
+
+    body {
+        color: #000;
+        background: #fff;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    th,
+    td {
+        border-color: #999;
+    }
+}

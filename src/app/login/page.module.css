@@ -109,3 +109,14 @@
     border-radius: 10px;
     font-size: 18px;
 }
+
+@media (max-width: 480px) {
+    .page {
+        padding: 12px;
+    }
+
+    .main {
+        padding: 24px 16px;
+        border-radius: 14px;
+    }
+}
