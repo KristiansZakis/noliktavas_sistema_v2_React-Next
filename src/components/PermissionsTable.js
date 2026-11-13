@@ -17,7 +17,7 @@ export default function PermissionsTable() {
                         <tr key={key}>
                             <td>{label}</td>
                             {ROLES.map((r) => (
-                                <td key={r}>{can(r, key) ? "✓" : "—"}</td>
+                                <td key={r}>{can(r, key) ? "✔" : "X"}</td>
                             ))}
                         </tr>
                     ))}
