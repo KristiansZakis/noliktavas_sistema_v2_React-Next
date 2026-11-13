@@ -235,6 +235,15 @@ select {
     -webkit-overflow-scrolling: touch;
 }
 
+select {
+    background-color: var(--background);
+}
+
+select option {
+    color: var(--foreground);
+    background: var(--background);
+}
+
 @media (min-width: 1400px) {
     .content {
         max-width: 1280px;
