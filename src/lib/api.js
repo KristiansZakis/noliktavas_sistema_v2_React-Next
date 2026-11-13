@@ -22,7 +22,10 @@ export function api(permission, handler) {
                 : Response.json(result ?? { ok: true });
         } catch (err) {
             if (err instanceof HttpError)
-                return Response.json({ error: err.message }, { status: err.status });
+                return Response.json(
+                    { error: err.message },
+                    { status: err.status },
+                );
             console.error(err);
             return Response.json({ error: "Server error" }, { status: 500 });
         }

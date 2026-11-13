@@ -31,7 +31,9 @@ function log(user, description) {
 
 export const listUsers = () =>
     db
-        .prepare("SELECT id, username, email, role, created_at FROM users ORDER BY id")
+        .prepare(
+            "SELECT id, username, email, role, created_at FROM users ORDER BY id",
+        )
         .all();
 
 const adminCount = () =>
@@ -51,7 +53,9 @@ export async function createUser(body) {
 }
 
 export async function updateUser(actor, id, body) {
-    const target = db.prepare("SELECT id, role FROM users WHERE id = ?").get(id);
+    const target = db
+        .prepare("SELECT id, role FROM users WHERE id = ?")
+        .get(id);
     if (!target) throw notFound("User");
     const f = v.userFields(body, { passwordRequired: false });
 
@@ -96,7 +100,11 @@ export function listItems() {
         .all();
     return items.map((i) => {
         const ps = placements.filter((p) => p.item_id === i.id);
-        return { ...i, placements: ps, placed: ps.reduce((s, p) => s + p.quantity, 0) };
+        return {
+            ...i,
+            placements: ps,
+            placed: ps.reduce((s, p) => s + p.quantity, 0),
+        };
     });
 }
 
@@ -195,7 +203,10 @@ export function updatePlace(user, id, body) {
         db.prepare(
             "UPDATE place SET storage_row_number=?, shelf_column_number=?, shelf_number=? WHERE place_id=?",
         ).run(c.storage_row_number, c.shelf_column_number, c.shelf_number, id);
-        log(user, `Location ${formatLocation(old)} changed to ${formatLocation(c)}`);
+        log(
+            user,
+            `Location ${formatLocation(old)} changed to ${formatLocation(c)}`,
+        );
     });
     return { ok: true };
 }
@@ -204,7 +215,10 @@ export function deletePlace(user, id) {
     const old = getPlace(id);
     write(() => {
         db.prepare("DELETE FROM place WHERE place_id = ?").run(id);
-        log(user, `Location ${formatLocation(old)} deleted (its placements were removed)`);
+        log(
+            user,
+            `Location ${formatLocation(old)} deleted (its placements were removed)`,
+        );
     });
     return { ok: true };
 }
@@ -213,7 +227,9 @@ export function savePlacement(user, body) {
     const itemId = v.int(body?.itemId, "Item", { min: 1 });
     const quantity = v.int(body?.quantity, "Quantity", { min: 1 });
     const c = v.coordFields(body);
-    const fromPlaceId = body?.placeId ? v.int(body.placeId, "Location", { min: 1 }) : null;
+    const fromPlaceId = body?.placeId
+        ? v.int(body.placeId, "Location", { min: 1 })
+        : null;
     const item = getItem(itemId);
 
     return write(() => {
@@ -229,10 +245,15 @@ export function savePlacement(user, body) {
         const moving = fromPlaceId && fromPlaceId !== place.place_id;
         let finalQty = quantity;
         if (moving) {
-            db.prepare("DELETE FROM items_place WHERE item_id=? AND place_id=?").run(itemId, fromPlaceId);
-            finalQty += db
-                .prepare("SELECT quantity FROM items_place WHERE item_id=? AND place_id=?")
-                .get(itemId, place.place_id)?.quantity ?? 0;
+            db.prepare(
+                "DELETE FROM items_place WHERE item_id=? AND place_id=?",
+            ).run(itemId, fromPlaceId);
+            finalQty +=
+                db
+                    .prepare(
+                        "SELECT quantity FROM items_place WHERE item_id=? AND place_id=?",
+                    )
+                    .get(itemId, place.place_id)?.quantity ?? 0;
         }
 
         const elsewhere = db
@@ -250,7 +271,10 @@ export function savePlacement(user, body) {
             `INSERT INTO items_place (item_id, place_id, quantity) VALUES (?, ?, ?)
              ON CONFLICT(item_id, place_id) DO UPDATE SET quantity = excluded.quantity`,
         ).run(itemId, place.place_id, finalQty);
-        log(user, `Placement: ${finalQty} x "${item.name}" at ${formatLocation(c)}${moving ? " (moved)" : ""}`);
+        log(
+            user,
+            `Placement: ${finalQty} x "${item.name}" at ${formatLocation(c)}${moving ? " (moved)" : ""}`,
+        );
         return { ok: true };
     });
 }
@@ -265,7 +289,10 @@ export function removePlacement(user, body) {
             .prepare("DELETE FROM items_place WHERE item_id=? AND place_id=?")
             .run(itemId, placeId);
         if (!r.changes) throw notFound("Placement");
-        log(user, `Placement removed: "${item.name}" from ${formatLocation(place)}`);
+        log(
+            user,
+            `Placement removed: "${item.name}" from ${formatLocation(place)}`,
+        );
     });
     return { ok: true };
 }
@@ -305,7 +332,8 @@ export function createOrder(user, body) {
             const item = db
                 .prepare("SELECT name, count FROM storage_items WHERE id = ?")
                 .get(l.itemId);
-            if (!item) throw new HttpError(400, `Item #${l.itemId} does not exist`);
+            if (!item)
+                throw new HttpError(400, `Item #${l.itemId} does not exist`);
             if (l.quantity > item.count)
                 throw new HttpError(
                     400,
@@ -313,7 +341,9 @@ export function createOrder(user, body) {
                 );
         }
         const r = db
-            .prepare("INSERT INTO orders (user_id, customer_name) VALUES (?, ?)")
+            .prepare(
+                "INSERT INTO orders (user_id, customer_name) VALUES (?, ?)",
+            )
             .run(user.id, f.customer_name);
         const id = Number(r.lastInsertRowid);
         const insert = db.prepare(
@@ -328,7 +358,9 @@ export function createOrder(user, body) {
 export function setOrderStatus(user, id, body) {
     const status = v.orderStatus(body?.status);
     return write(() => {
-        const order = db.prepare("SELECT * FROM orders WHERE order_id = ?").get(id);
+        const order = db
+            .prepare("SELECT * FROM orders WHERE order_id = ?")
+            .get(id);
         if (!order) throw notFound("Order");
         if (!ORDER_FLOW[order.order_status].includes(status))
             throw new HttpError(
@@ -351,21 +383,31 @@ export function setOrderStatus(user, id, body) {
                         `Not enough stock of "${l.name}": ${l.count} available, ${l.count_ordered} needed`,
                     );
             }
-            const take = db.prepare("UPDATE storage_items SET count = count - ? WHERE id = ?");
+            const take = db.prepare(
+                "UPDATE storage_items SET count = count - ? WHERE id = ?",
+            );
             for (const l of lines) take.run(l.count_ordered, l.item_id);
         }
 
-        db.prepare("UPDATE orders SET order_status = ? WHERE order_id = ?").run(status, id);
+        db.prepare("UPDATE orders SET order_status = ? WHERE order_id = ?").run(
+            status,
+            id,
+        );
         log(user, `Order #${id}: ${order.order_status} -> ${status}`);
         return { ok: true };
     });
 }
 
 export function deleteOrder(user, id) {
-    const order = db.prepare("SELECT order_status FROM orders WHERE order_id = ?").get(id);
+    const order = db
+        .prepare("SELECT order_status FROM orders WHERE order_id = ?")
+        .get(id);
     if (!order) throw notFound("Order");
     if (!["new", "cancelled"].includes(order.order_status))
-        throw new HttpError(409, "Only 'new' or 'cancelled' orders can be deleted");
+        throw new HttpError(
+            409,
+            "Only 'new' or 'cancelled' orders can be deleted",
+        );
     write(() => {
         db.prepare("DELETE FROM orders WHERE order_id = ?").run(id);
         log(user, `Order #${id} deleted`);
@@ -380,7 +422,8 @@ export function buildReport(type, user) {
     if (type === "warehouse") {
         const orders = listOrders();
         const byStatus = {};
-        for (const o of orders) byStatus[o.order_status] = (byStatus[o.order_status] ?? 0) + 1;
+        for (const o of orders)
+            byStatus[o.order_status] = (byStatus[o.order_status] ?? 0) + 1;
         const changes = db
             .prepare(
                 `SELECT h.created_at, u.username, h.description
@@ -393,23 +436,42 @@ export function buildReport(type, user) {
             summary: [
                 generated,
                 `Item types: ${items.length}, total units: ${items.reduce((s, i) => s + i.count, 0)}`,
-                `Orders: ${orders.length} (${Object.entries(byStatus).map(([k, n]) => `${k} ${n}`).join(", ") || "none"})`,
+                `Orders: ${orders.length} (${
+                    Object.entries(byStatus)
+                        .map(([k, n]) => `${k} ${n}`)
+                        .join(", ") || "none"
+                })`,
             ],
             sections: [
                 {
                     title: "Stock",
                     head: ["Code", "Name", "Count", "Condition"],
-                    rows: items.map((i) => [i.code, i.name, i.count, i.item_condition]),
+                    rows: items.map((i) => [
+                        i.code,
+                        i.name,
+                        i.count,
+                        i.item_condition,
+                    ]),
                 },
                 {
                     title: "Orders",
                     head: ["Order", "Created", "Customer", "Status", "Units"],
-                    rows: orders.map((o) => [`#${o.order_id}`, o.created_at, o.customer_name, o.order_status, o.units]),
+                    rows: orders.map((o) => [
+                        `#${o.order_id}`,
+                        o.created_at,
+                        o.customer_name,
+                        o.order_status,
+                        o.units,
+                    ]),
                 },
                 {
                     title: "Latest changes",
                     head: ["Time", "User", "Change"],
-                    rows: changes.map((c) => [c.created_at, c.username ?? "(deleted)", c.description]),
+                    rows: changes.map((c) => [
+                        c.created_at,
+                        c.username ?? "(deleted)",
+                        c.description,
+                    ]),
                 },
             ],
         };
@@ -423,7 +485,13 @@ export function buildReport(type, user) {
                 title: "Items on shelves",
                 head: ["Location", "Code", "Name", "Quantity", "Condition"],
                 rows: items.flatMap((i) =>
-                    i.placements.map((p) => [formatLocation(p), i.code, i.name, p.quantity, i.item_condition]),
+                    i.placements.map((p) => [
+                        formatLocation(p),
+                        i.code,
+                        i.name,
+                        p.quantity,
+                        i.item_condition,
+                    ]),
                 ),
             },
             {
@@ -431,18 +499,25 @@ export function buildReport(type, user) {
                 head: ["Code", "Name", "Units without a location"],
                 rows: items
                     .filter((i) => i.count > i.placed)
-                    .map((i) => [i.code, i.name, `${i.count - i.placed} of ${i.count}`]),
+                    .map((i) => [
+                        i.code,
+                        i.name,
+                        `${i.count - i.placed} of ${i.count}`,
+                    ]),
             },
             {
                 title: "Damaged or expired",
                 head: ["Code", "Name", "Condition", "Locations"],
                 rows: items
-                    .filter((i) => ["damaged", "expired"].includes(i.item_condition))
+                    .filter((i) =>
+                        ["damaged", "expired"].includes(i.item_condition),
+                    )
                     .map((i) => [
                         i.code,
                         i.name,
                         i.item_condition,
-                        i.placements.map(formatLocation).join(", ") || "not placed",
+                        i.placements.map(formatLocation).join(", ") ||
+                            "not placed",
                     ]),
             },
         ],
